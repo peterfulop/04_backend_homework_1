@@ -10,10 +10,7 @@ const signToken = (id: string) => {
 
 const createSendToken = (userId: string, statusCode: number, res: Response) => {
   const token = signToken(userId);
-  const cookieExpiresIn: number = parseInt(
-    `${process.env.JWT_COOKIE_EXPIRES_IN}`,
-    10
-  );
+  const cookieExpiresIn: number = Number(process.env.JWT_COOKIE_EXPIRES_IN);
   const cookieOptions: any = {
     expires: new Date(Date.now() + cookieExpiresIn * 24 * 60 * 60 * 1000),
     httpOnly: true,
@@ -39,8 +36,8 @@ const verifyToken = async (token: string) => {
 
 export const login: RequestHandler = async (req, res, _next) => {
   try {
-    const VALID_PASSWORD = process.env.VALID_PASSWORD as string;
-    const VALID_USERID = process.env.VALID_USERID as string;
+    const VALID_PASSWORD: string = String(process.env.VALID_PASSWORD);
+    const VALID_USERID: string = String(process.env.VALID_USERID);
 
     const { username, password } = req.body as {
       username: string;
@@ -66,7 +63,7 @@ export const login: RequestHandler = async (req, res, _next) => {
 export const protect: RequestHandler = async (req, res, next) => {
   try {
     console.log("Protected rout...");
-    const VALID_USERID = process.env.VALID_USERID as string;
+    const VALID_USERID: string = String(process.env.VALID_USERID);
     let token: string | undefined;
     if (
       req.headers.authorization &&
@@ -78,7 +75,7 @@ export const protect: RequestHandler = async (req, res, next) => {
     }
     if (!token) {
       return res.status(401).json({
-        error: "You are not logged in!",
+        error: "No token.",
       });
     }
     const decoded = await verifyToken(token);
