@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start:dev": "nodemon dist/server.js",
+    "start:dev": "nodemon dist/index.js",
     "start:prod": "SET NODE_ENV=production& nodemon dist/server.js"
   },
   "dependencies": {
@@ -20,6 +20,8 @@
     "express": "4.17.3",
     "helmet": "^5.0.2",
     "jsonwebtoken": "8.5.1",
+    "mongodb": "^4.4.1",
+    "mongoose": "^6.2.5",
     "morgan": "1.10.0",
     "nodemon": "2.0.15"
   },

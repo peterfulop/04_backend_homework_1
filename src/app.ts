@@ -1,35 +1,12 @@
-import express, { Application, NextFunction, Request, Response } from "express";
-import "dotenv/config";
+import express, { Application } from "express";
+import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
+import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
-import cookieParser from "cookie-parser";
-import helmet from "helmet";
-
-import foodRoutes from "./routes/foodRoutes";
-import userRoutes from "./routes/userRoutes";
+import "dotenv/config";
 import Controller from "./utils/interfaces/controller.interface";
 import ErrorMiddleware from "./middleware/error.middleware";
-
-// dotenv.config();
-// const API = process.env.API_URL;
-
-// const app = express();
-// app.use(express.json());
-// app.use(cors());
-// app.use(cookieParser());
-
-// if (process.env.NODE_ENV === "development") {
-//   app.use(morgan("dev"));
-// }
-
-// app.use(`${API}/food`, foodRoutes);
-// app.use(`${API}/user`, userRoutes);
-
-// app.all("*", (_req: Request, res: Response, _next: NextFunction) => {
-//   res.status(404).json({ error: "not found" });
-// });
-
-// export default app;
 
 class App {
   public express: Application;
@@ -64,7 +41,15 @@ class App {
     this.express.use(ErrorMiddleware);
   }
 
-  private initialiseDatabaseConnection(): void {}
+  private initialiseDatabaseConnection(): void {
+    const DB = String(process.env.MONGO_PATH).replace(
+      "<PASSWORD>",
+      String(process.env.MONGO_PASSWORD)
+    );
+    mongoose.connect(DB).then(() => {
+      console.log("DB connection successful!");
+    });
+  }
 
   public listen(): void {
     this.express.listen(this.port, () => {
