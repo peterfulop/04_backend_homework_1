@@ -6,7 +6,7 @@ import {
   FoodEntry,
   FoodEntryDetails,
   FoodEntryUpdateOptions,
-} from "../interfaces";
+} from "../utils/interfaces/food.interfaces";
 
 export const getFoods: RequestHandler = (req, res, next) => {
   try {

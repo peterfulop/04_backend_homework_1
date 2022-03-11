@@ -1,4 +1,4 @@
-import { FoodEntry } from "../interfaces";
+import { FoodEntry } from "../utils/interfaces/food.interfaces";
 
 export let FOODS: FoodEntry[] = [
   {

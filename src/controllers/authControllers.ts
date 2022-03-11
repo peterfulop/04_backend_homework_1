@@ -1,38 +1,6 @@
-import { RequestHandler, Request, Response } from "express";
-import jwt, { Secret } from "jsonwebtoken";
+import { RequestHandler } from "express";
 import bcrypt from "bcrypt";
-
-const signToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as Secret, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-const createSendToken = (userId: string, statusCode: number, res: Response) => {
-  const token = signToken(userId);
-  const cookieExpiresIn: number = Number(process.env.JWT_COOKIE_EXPIRES_IN);
-  const cookieOptions: any = {
-    expires: new Date(Date.now() + cookieExpiresIn * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-  };
-  if (process.env.NODE_ENV === "production") {
-    cookieOptions.secure = true;
-  }
-  res.cookie("jwt", token, cookieOptions);
-  res.status(statusCode).json({
-    token,
-  });
-};
-
-const verifyToken = async (token: string) => {
-  return new Promise<any>((resolve, rejects) => {
-    try {
-      resolve(jwt.verify(token, process.env.JWT_SECRET as string));
-    } catch (error) {
-      rejects(error);
-    }
-  });
-};
+import { createSendToken, verifyToken } from "../utils/token";
 
 export const login: RequestHandler = async (req, res, _next) => {
   try {
