@@ -1,14 +1,15 @@
 import Food from "../food/food.model";
-import { FoodEntry, FoodEntryDetails } from "../food/food.interface";
+import {
+  FoodEntry,
+  FoodEntryCreateOptions,
+  FoodEntryUpdateOptions,
+} from "../food/food.interface";
 import mongoose from "mongoose";
 
 class FoodService {
-  public async createFood(
-    name: string,
-    details: FoodEntryDetails
-  ): Promise<FoodEntry> {
+  public async createFood(newFood: FoodEntryCreateOptions): Promise<FoodEntry> {
     try {
-      const food = await Food.create({ name, details });
+      const food = await Food.create(newFood);
       return food;
     } catch (error: any) {
       throw new Error(error.message);
@@ -17,18 +18,13 @@ class FoodService {
 
   public async updateFood(
     id: string,
-    name: string,
-    details: FoodEntryDetails
+    updateFood: FoodEntryUpdateOptions
   ): Promise<FoodEntry> {
     try {
-      const food = await Food.findByIdAndUpdate(
-        id,
-        { name, details },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+      const food = await Food.findByIdAndUpdate(id, updateFood, {
+        new: true,
+        runValidators: true,
+      });
       return food;
     } catch (error: any) {
       throw new Error(error.message);

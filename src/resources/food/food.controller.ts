@@ -4,6 +4,10 @@ import HttpExceptions from "../../exceptions/http.exception";
 import validationMiddleware from "../../middleware/validation.middleware";
 import validate from "../food/food.validation";
 import FoodService from "../food/food.service";
+import {
+  FoodEntryCreateOptions,
+  FoodEntryUpdateOptions,
+} from "./food.interface";
 
 class FoodController implements Controller {
   public path = "/food";
@@ -41,7 +45,8 @@ class FoodController implements Controller {
   ): Promise<Response | void> => {
     try {
       const { name, details } = req.body;
-      const data = await this.FoodService.createFood(name, details);
+      const newFood: FoodEntryCreateOptions = { name, details };
+      const data = await this.FoodService.createFood(newFood);
       res.status(201).json({ status: "success", data });
     } catch (error: any) {
       next(new HttpExceptions(400, error.message));
@@ -56,7 +61,8 @@ class FoodController implements Controller {
     try {
       const { name, details } = req.body;
       const { id } = req.params as { id: string };
-      const data = await this.FoodService.updateFood(id, name, details);
+      const updateFood: FoodEntryUpdateOptions = { name, details };
+      const data = await this.FoodService.updateFood(id, updateFood);
       res.status(200).json({
         status: "success",
         message: "Document has been updated",
@@ -74,7 +80,7 @@ class FoodController implements Controller {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params as { id: string };
-      const data = await this.FoodService.deleteFood(id);
+      await this.FoodService.deleteFood(id);
       res.status(204).json({
         status: "success",
         message: "Document has been deleted",
@@ -94,6 +100,7 @@ class FoodController implements Controller {
       const data = await this.FoodService.getFoods();
       res.status(200).json({
         status: "success",
+        results: data.length,
         data: { data },
       });
     } catch (error: any) {
@@ -111,7 +118,6 @@ class FoodController implements Controller {
       const data = await this.FoodService.getFood(id);
       res.status(201).json({
         status: "success",
-        results: data.length,
         data: { data },
       });
     } catch (error: any) {
