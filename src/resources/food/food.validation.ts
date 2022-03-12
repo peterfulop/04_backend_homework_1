@@ -1,9 +1,6 @@
 import Joi from "joi";
 
 const foodDetailsValidation = (obj: object, helpers: Joi.CustomHelpers) => {
-  if (Array.isArray(obj) || Object.keys(obj).length === 0) {
-    return helpers.message({ custom: "Invalid object!" });
-  }
   for (const d of Object.values(obj)) {
     if (!d.unit || !d.amount) {
       return helpers.message({

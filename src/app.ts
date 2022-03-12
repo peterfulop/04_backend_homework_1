@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import helmet from "helmet";
@@ -35,6 +35,7 @@ class App {
     controllers.forEach((controller: Controller) => {
       this.express.use(process.env.API_URL as string, controller.router);
     });
+    this.handleRouteErrors();
   }
 
   private initialiseErrorHandling(): void {
@@ -58,6 +59,12 @@ class App {
       );
     });
   }
+
+  public handleRouteErrors = (): void => {
+    this.express.all("*", (req: Request, res: Response, next: NextFunction) => {
+      res.status(404).json({ error: "not found" });
+    });
+  };
 }
 
 export default App;

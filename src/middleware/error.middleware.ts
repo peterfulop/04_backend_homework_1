@@ -1,19 +1,31 @@
 import { Request, Response, NextFunction } from "express";
-import { stat } from "fs";
 import HttpExceptions from "../exceptions/http.exception";
 
+const selectError = (error: HttpExceptions) => {
+  let sendingObject = {
+    error: "Internal server error",
+    status: 500,
+  };
+
+  if (error.message.includes("Cast to ObjectId failed")) {
+    sendingObject.error = "Not found";
+    sendingObject.status = 404;
+  }
+  return sendingObject;
+};
+
 const ErrorMiddleware = (
-  error: HttpExceptions,
+  err: HttpExceptions | any,
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  const status = error.status || 500;
-  const message = error.message || "Internal server error";
+  const errorObject = selectError(err);
+  const status = errorObject.status;
+  const error = errorObject.error;
 
   res.status(status).send({
-    status,
-    message,
+    error,
   });
 };
 

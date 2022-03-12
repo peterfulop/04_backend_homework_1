@@ -20,21 +20,17 @@ class FoodController implements Controller {
 
   private initialiseRoutes(): void {
     this.router.get(`${this.path}`, this.getAll);
-
     this.router.get(`${this.path}/:id`, this.getById);
-
     this.router.post(
       `${this.path}`,
       validationMiddleware(validate.create),
       this.create
     );
-
     this.router.put(
       `${this.path}/:id`,
       validationMiddleware(validate.create),
       this.update
     );
-
     this.router.delete(`${this.path}/:id`, this.delete);
   }
 
