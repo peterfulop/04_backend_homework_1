@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from "express";
 import App from "./app";
 import FoodController from "./resources/food/food.controller";
 import validateEnv from "./utils/validateEnv";

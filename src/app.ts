@@ -43,10 +43,10 @@ class App {
   }
 
   private initialiseDatabaseConnection(): void {
-    const DB = String(process.env.MONGO_PATH).replace(
-      "<PASSWORD>",
-      String(process.env.MONGO_PASSWORD)
-    );
+    const DB = String(process.env.MONGO_PATH)
+      .replace("<USERNAME>", String(process.env.MONGO_USER))
+      .replace("<PASSWORD>", String(process.env.MONGO_PASSWORD));
+
     mongoose.connect(DB).then(() => {
       console.log("DB connection successful!");
     });
@@ -60,7 +60,7 @@ class App {
     });
   }
 
-  public handleRouteErrors = (): void => {
+  private handleRouteErrors = (): void => {
     this.express.all("*", (req: Request, res: Response, next: NextFunction) => {
       res.status(404).json({ error: "not found" });
     });
