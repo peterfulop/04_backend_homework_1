@@ -12,5 +12,4 @@ export type FoodEntryUpdateOptions = Partial<FoodEntryCreateOptions>;
 export interface FoodEntry extends Document {
   name: string;
   details?: FoodEntryDetails;
-  createdAt: Date;
 }
