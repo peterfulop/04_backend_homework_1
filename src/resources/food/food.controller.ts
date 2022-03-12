@@ -8,6 +8,7 @@ import {
   FoodEntryCreateOptions,
   FoodEntryUpdateOptions,
 } from "./food.interface";
+import { protect } from "../../middleware/protect.middleware";
 
 class FoodController implements Controller {
   public path = "/food";
@@ -20,7 +21,7 @@ class FoodController implements Controller {
 
   private initialiseRoutes(): void {
     this.router.get(`${this.path}`, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getById);
+    this.router.get(`${this.path}/:id`, this.getOne);
     this.router.post(
       `${this.path}`,
       validationMiddleware(validate.create),
@@ -97,14 +98,14 @@ class FoodController implements Controller {
       res.status(200).json({
         status: "success",
         results: data.length,
-        data: { data },
+        data,
       });
     } catch (error: any) {
       next(new HttpExceptions(400, error.message));
     }
   };
 
-  private getById = async (
+  private getOne = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -114,7 +115,7 @@ class FoodController implements Controller {
       const data = await this.FoodService.getFood(id);
       res.status(201).json({
         status: "success",
-        data: { data },
+        data,
       });
     } catch (error: any) {
       next(new HttpExceptions(400, error.message));

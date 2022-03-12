@@ -1,13 +1,13 @@
 import Food from "../food/food.model";
 import {
-  FoodEntry,
   FoodEntryCreateOptions,
   FoodEntryUpdateOptions,
 } from "../food/food.interface";
-import mongoose from "mongoose";
 
 class FoodService {
-  public async createFood(newFood: FoodEntryCreateOptions): Promise<FoodEntry> {
+  public async createFood(
+    newFood: FoodEntryCreateOptions
+  ): Promise<FoodEntryCreateOptions> {
     try {
       const food = await Food.create(newFood);
       return food;
@@ -19,7 +19,7 @@ class FoodService {
   public async updateFood(
     id: string,
     updateFood: FoodEntryUpdateOptions
-  ): Promise<FoodEntry> {
+  ): Promise<FoodEntryCreateOptions> {
     try {
       const food = await Food.findByIdAndUpdate(id, updateFood, {
         new: true,
@@ -31,7 +31,7 @@ class FoodService {
     }
   }
 
-  public async deleteFood(id: string): Promise<FoodEntry> {
+  public async deleteFood(id: string): Promise<FoodEntryCreateOptions> {
     try {
       const food = await Food.findByIdAndDelete(id);
       return food;

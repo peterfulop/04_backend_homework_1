@@ -1,5 +1,6 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import Token from "./interfaces/token.interface";
 
 export const signToken = (id: string): string => {
@@ -23,7 +24,7 @@ export const createSendToken = (
   userId: string,
   statusCode: number,
   res: Response
-) => {
+): void => {
   const token = signToken(userId);
   const cookieExpiresIn: number = Number(process.env.JWT_COOKIE_EXPIRES_IN);
   const cookieOptions: any = {
