@@ -11,9 +11,7 @@ class UserService {
     return user;
   }
 
-  public async createUser(
-    newUser: UserCreateOptions
-  ): Promise<UserCreateOptions> {
+  public async createUser(newUser: UserCreateOptions): Promise<UserCreateOptions> {
     try {
       const user = await User.create(newUser);
       const current = await User.findById(user._id);
@@ -41,10 +39,7 @@ class UserService {
     }
   }
 
-  public async updateUser(
-    id: string,
-    userUpdate: UserUpdateOptions
-  ): Promise<any> {
+  public async updateUser(id: string, userUpdate: UserUpdateOptions): Promise<any> {
     try {
       const user = await User.findByIdAndUpdate(id, userUpdate, {
         new: true,

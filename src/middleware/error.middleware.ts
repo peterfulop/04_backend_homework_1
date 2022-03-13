@@ -1,22 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import HttpExceptions from "../exceptions/http.exception";
 
-const setErrorMessage = (error: HttpExceptions) => {
-  console.log("The Error: ", error);
-
-  let sendingObject = {
-    error: "Internal server error",
-    status: 500,
-  };
-
-  if (error.message.includes("Cast to ObjectId failed")) {
-    sendingObject.error = "Not found";
-    sendingObject.status = 404;
+const setErrorDetails = (error: HttpExceptions) => {
+  let errorMessage: string = "Internal server error";
+  let statusCode: number = 500;
+  if (error.name === "JsonWebTokenError" || error.message === "notoken") {
+    errorMessage = "You are not logged in!";
+    statusCode = 401;
+  } else if (error.message === "nouser") {
+    errorMessage = "The user no longer exists";
+    statusCode = 401;
+  } else if (error.name === "TokenExpiredError") {
+    errorMessage = "Expired token. You must be logged in!";
+    statusCode = 401;
+  } else if (error.message.includes("Cast to ObjectId failed")) {
+    errorMessage = "Not found";
+    statusCode = 404;
   } else if (error.message.includes("E11000")) {
-    sendingObject.error = "The email is already in use";
-    sendingObject.status = 400;
+    errorMessage = "The email is already in use";
+    statusCode = 400;
   }
-  return sendingObject;
+  return { errorMessage, statusCode };
 };
 
 const ErrorMiddleware = (
@@ -25,9 +29,9 @@ const ErrorMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
-  const errorObject = setErrorMessage(err);
-  const status = errorObject.status;
-  const error = errorObject.error;
+  const errorObject = setErrorDetails(err);
+  const status = errorObject.statusCode;
+  const error = errorObject.errorMessage;
 
   res.status(status).send({
     error,

@@ -4,10 +4,7 @@ import HttpExceptions from "../../exceptions/http.exception";
 import validationMiddleware from "../../middleware/validation.middleware";
 import validate from "../food/food.validation";
 import FoodService from "../food/food.service";
-import {
-  FoodEntryCreateOptions,
-  FoodEntryUpdateOptions,
-} from "./food.interface";
+import { FoodEntryCreateOptions, FoodEntryUpdateOptions } from "./food.interface";
 import { protect } from "../../middleware/protect.middleware";
 
 class FoodController implements Controller {
@@ -21,25 +18,13 @@ class FoodController implements Controller {
 
   private initialiseRoutes(): void {
     this.router.get(`${this.path}`, protect, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getOne);
-    this.router.post(
-      `${this.path}`,
-      validationMiddleware(validate.create),
-      this.create
-    );
-    this.router.put(
-      `${this.path}/:id`,
-      validationMiddleware(validate.create),
-      this.update
-    );
-    this.router.delete(`${this.path}/:id`, this.delete);
+    this.router.get(`${this.path}/:id`, protect, this.getOne);
+    this.router.post(`${this.path}`, protect, validationMiddleware(validate.create), this.create);
+    this.router.put(`${this.path}/:id`, protect, validationMiddleware(validate.create), this.update);
+    this.router.delete(`${this.path}/:id`, protect, this.delete);
   }
 
-  private getAll = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const data = await this.FoodService.getFoods();
       res.status(200).json({
@@ -52,11 +37,7 @@ class FoodController implements Controller {
     }
   };
 
-  private getOne = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | any> => {
+  private getOne = async (req: Request, res: Response, next: NextFunction): Promise<Response | any> => {
     try {
       const { id } = req.params as { id: string };
       const data = await this.FoodService.getFood(id);
@@ -74,11 +55,7 @@ class FoodController implements Controller {
     }
   };
 
-  private create = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  private create = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { name, details } = req.body;
       const newFood: FoodEntryCreateOptions = { name, details };
@@ -89,11 +66,7 @@ class FoodController implements Controller {
     }
   };
 
-  private update = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { name, details } = req.body;
       const { id } = req.params as { id: string };
@@ -114,11 +87,7 @@ class FoodController implements Controller {
     }
   };
 
-  private delete = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  private delete = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params as { id: string };
       await this.FoodService.deleteFood(id);

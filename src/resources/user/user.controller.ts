@@ -1,18 +1,12 @@
-import {
-  NextFunction,
-  Request,
-  RequestHandler,
-  Response,
-  Router,
-} from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import HttpExceptions from "../../exceptions/http.exception";
+import { protect } from "../../middleware/protect.middleware";
 import validationMiddleware from "../../middleware/validation.middleware";
 import Controller from "../../utils/interfaces/controller.interface";
 import { createSendToken } from "../../utils/token";
 import { UserCreateOptions, UserUpdateOptions } from "./user.interface";
 import UserService from "./user.service";
 import validation from "./user.validation";
-import bcrypt from "bcrypt";
 
 class UserController implements Controller {
   path = "/user";
@@ -24,52 +18,14 @@ class UserController implements Controller {
   }
 
   private initialiseRoutes() {
-    this.router.post(
-      `${this.path}/signup`,
-      validationMiddleware(validation.create),
-      this.signup
-    );
-    this.router.post(
-      `${this.path}/login`,
-      validationMiddleware(validation.login),
-      this.login
-    );
-
-    this.router.get(`${this.path}`, this.getAll);
-    this.router.get(`${this.path}/:id`, this.getOne);
-    this.router.put(
-      `${this.path}/:id`,
-      validationMiddleware(validation.update),
-      this.update
-    );
-    this.router.delete(`${this.path}/:id`, this.delete);
+    this.router.post(`${this.path}/signup`, validationMiddleware(validation.create), this.signup);
+    this.router.post(`${this.path}/login`, validationMiddleware(validation.login), this.login);
+    this.router.get(`${this.path}/logout`, this.logout);
+    this.router.get(`${this.path}`, protect, this.getAll);
+    this.router.get(`${this.path}/:id`, protect, this.getOne);
+    this.router.put(`${this.path}/:id`, protect, validationMiddleware(validation.update), this.update);
+    this.router.delete(`${this.path}/:id`, protect, this.delete);
   }
-
-  private log: RequestHandler = async (req, res, next) => {
-    try {
-      const VALID_PASSWORD: string = String(process.env.VALID_PASSWORD);
-      const VALID_USERID: string = String(process.env.VALID_USERID);
-
-      const { username, password } = req.body as {
-        username: string;
-        password: string;
-      };
-      if (!username || !password) {
-        throw Error();
-      }
-      const userPassword = await bcrypt.compare(password, VALID_PASSWORD);
-      if (!userPassword) {
-        return res.status(401).json({
-          error: "invalid login credential",
-        });
-      }
-      createSendToken(VALID_USERID, 200, res);
-    } catch (e) {
-      res.status(500).json({
-        error: "internal server error",
-      });
-    }
-  };
 
   private login = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -107,6 +63,20 @@ class UserController implements Controller {
         id: data._id,
         status: "success",
         data,
+      });
+    } catch (error: any) {
+      next(new HttpExceptions(400, error.message));
+    }
+  };
+
+  private logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.cookie("jwt", "", {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true,
+      });
+      res.status(200).json({
+        status: "You logged out!",
       });
     } catch (error: any) {
       next(new HttpExceptions(400, error.message));
