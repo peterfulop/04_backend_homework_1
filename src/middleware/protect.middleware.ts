@@ -1,10 +1,12 @@
 import { RequestHandler } from "express";
+import User from "../resources/user/user.model";
 import { verifyToken } from "../utils/token";
 
 export const protect: RequestHandler = async (req, res, next) => {
   try {
     console.log("Protected rout...");
-    const VALID_USERID: string = String(process.env.VALID_USERID);
+    console.log(req.headers.authorization);
+
     let token: string | undefined;
     if (
       req.headers.authorization &&
@@ -14,17 +16,22 @@ export const protect: RequestHandler = async (req, res, next) => {
     } else if (req.cookies.jwt) {
       token = req.cookies.jwt;
     }
+
     if (!token) {
-      return res.status(401).json({
-        error: "No token.",
-      });
-    }
-    const decoded = await verifyToken(token);
-    if (VALID_USERID !== Object(decoded).id) {
       return res.status(401).json({
         error: "You are not logged in!",
       });
     }
+
+    const decoded = await verifyToken(token);
+    const activeUser = await User.findById(Object(decoded).id);
+    if (!activeUser) {
+      return res.status(401).json({
+        error: "The user belonging to this token does no longer exist.",
+      });
+    }
+    req.user = activeUser;
+    res.locals.user = activeUser;
     next();
   } catch (error: any) {
     let message: string = "internal server error";
@@ -34,7 +41,6 @@ export const protect: RequestHandler = async (req, res, next) => {
       message = "Expired token!";
     }
     res.status(500).json({
-      a: error.message,
       error: message,
     });
   }

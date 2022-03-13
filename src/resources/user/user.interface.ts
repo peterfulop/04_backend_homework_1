@@ -1,7 +1,7 @@
 import { Document } from "mongodb";
 import mongoose from "mongoose";
 
-export interface UserEntryCreateOptions extends Document {
+export interface UserCreateOptions extends Document {
   _id?: string;
   username: string;
   email: string;
@@ -9,7 +9,7 @@ export interface UserEntryCreateOptions extends Document {
   confirmPassword: string;
 }
 
-export interface UserLoginOptions extends Document {
-  email: string;
-  password: string;
+export interface UserUpdateOptions extends Document {
+  username?: string;
+  email?: string;
 }

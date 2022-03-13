@@ -1,6 +1,5 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import Token from "./interfaces/token.interface";
 
 export const signToken = (id: string): string => {

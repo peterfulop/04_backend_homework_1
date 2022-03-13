@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { UserEntryCreateOptions } from "./user.interface";
 import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema(
@@ -7,7 +6,7 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       required: [true, "User must have a username"],
-      unique: false,
+      unique: true,
     },
     email: {
       type: String,
@@ -30,10 +29,6 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// UserSchema.methods.passwordValidator = function (this: UserEntryCreateOptions) {
-//   return this.password === this.passwordConfirm;
-// };
 
 UserSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);

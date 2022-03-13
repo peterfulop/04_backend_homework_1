@@ -20,7 +20,7 @@ class FoodController implements Controller {
   }
 
   private initialiseRoutes(): void {
-    this.router.get(`${this.path}`, this.getAll);
+    this.router.get(`${this.path}`, protect, this.getAll);
     this.router.get(`${this.path}/:id`, this.getOne);
     this.router.post(
       `${this.path}`,
@@ -34,6 +34,45 @@ class FoodController implements Controller {
     );
     this.router.delete(`${this.path}/:id`, this.delete);
   }
+
+  private getAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const data = await this.FoodService.getFoods();
+      res.status(200).json({
+        status: "success",
+        results: data.length,
+        data,
+      });
+    } catch (error: any) {
+      next(new HttpExceptions(400, error.message));
+    }
+  };
+
+  private getOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | any> => {
+    try {
+      const { id } = req.params as { id: string };
+      const data = await this.FoodService.getFood(id);
+      if (!data) {
+        return res.status(404).json({
+          error: "Id not exist!",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        data,
+      });
+    } catch (error: any) {
+      next(new HttpExceptions(400, error.message));
+    }
+  };
 
   private create = async (
     req: Request,
@@ -60,6 +99,11 @@ class FoodController implements Controller {
       const { id } = req.params as { id: string };
       const updateFood: FoodEntryUpdateOptions = { name, details };
       const data = await this.FoodService.updateFood(id, updateFood);
+      if (!data) {
+        return res.status(404).json({
+          error: "Id not exist!",
+        });
+      }
       res.status(200).json({
         status: "success",
         message: "Document has been updated",
@@ -82,40 +126,6 @@ class FoodController implements Controller {
         status: "success",
         message: "Document has been deleted",
         data: null,
-      });
-    } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
-    }
-  };
-
-  private getAll = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const data = await this.FoodService.getFoods();
-      res.status(200).json({
-        status: "success",
-        results: data.length,
-        data,
-      });
-    } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
-    }
-  };
-
-  private getOne = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const { id } = req.params as { id: string };
-      const data = await this.FoodService.getFood(id);
-      res.status(201).json({
-        status: "success",
-        data,
       });
     } catch (error: any) {
       next(new HttpExceptions(400, error.message));

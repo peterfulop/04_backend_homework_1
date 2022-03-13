@@ -1,20 +1,25 @@
-import mongoose from "mongoose";
-import { UserEntryCreateOptions, UserLoginOptions } from "./user.interface";
+import { UserCreateOptions, UserUpdateOptions } from "./user.interface";
 import User from "./user.model";
+import bcrypt from "bcrypt";
 
 class UserService {
-  public async loginUser(userlogin: UserLoginOptions): Promise<any> {}
+  public async loginUser(username: string, password: string): Promise<any> {
+    const user = await User.findOne({ username: username }).select("+password");
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return false;
+    }
+    return user;
+  }
 
   public async createUser(
-    newUser: UserEntryCreateOptions
-  ): Promise<UserEntryCreateOptions> {
+    newUser: UserCreateOptions
+  ): Promise<UserCreateOptions> {
     try {
       const user = await User.create(newUser);
       const current = await User.findById(user._id);
       return current;
     } catch (error: any) {
-      console.log(error);
-      throw new Error(error.message);
+      throw new Error(error);
     }
   }
 
@@ -38,7 +43,7 @@ class UserService {
 
   public async updateUser(
     id: string,
-    userUpdate: UserLoginOptions
+    userUpdate: UserUpdateOptions
   ): Promise<any> {
     try {
       const user = await User.findByIdAndUpdate(id, userUpdate, {
