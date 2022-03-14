@@ -14,7 +14,7 @@ class App {
 
   constructor(controllers: Controller[], port: number) {
     this.express = express();
-    this.port = port;
+    this.port = port | 3000;
 
     this.initialiseDatabaseConnection();
     this.initialiseMiddleware();
@@ -35,7 +35,7 @@ class App {
     controllers.forEach((controller: Controller) => {
       this.express.use(process.env.API_URL as string, controller.router);
     });
-    this.handleRouteErrors();
+    this.routeErrorHandling();
   }
 
   private initialiseErrorHandling(): void {
@@ -54,13 +54,11 @@ class App {
 
   public listen(): void {
     this.express.listen(this.port, () => {
-      console.log(
-        `App is running on port: ${this.port}... mode:${process.env.NODE_ENV}`
-      );
+      console.log(`App is running on port: ${this.port}... mode:${process.env.NODE_ENV}`);
     });
   }
 
-  private handleRouteErrors = (): void => {
+  private routeErrorHandling = (): void => {
     this.express.all("*", (req: Request, res: Response, next: NextFunction) => {
       res.status(404).json({ error: "not found" });
     });

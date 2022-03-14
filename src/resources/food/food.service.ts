@@ -1,13 +1,8 @@
 import Food from "../food/food.model";
-import {
-  FoodEntryCreateOptions,
-  FoodEntryUpdateOptions,
-} from "../food/food.interface";
+import { FoodEntryCreateOptions, FoodEntryUpdateOptions } from "../food/food.interface";
 
 class FoodService {
-  public async createFood(
-    newFood: FoodEntryCreateOptions
-  ): Promise<FoodEntryCreateOptions> {
+  public async createFood(newFood: FoodEntryCreateOptions): Promise<FoodEntryCreateOptions> {
     try {
       const food = await Food.create(newFood);
       return food;
@@ -40,7 +35,7 @@ class FoodService {
     }
   }
 
-  public async getFoods(): Promise<any[]> {
+  public async getFoods(): Promise<FoodEntryCreateOptions[]> {
     try {
       const foods = await Food.find();
       return foods;
@@ -49,7 +44,7 @@ class FoodService {
     }
   }
 
-  public async getFood(id: string): Promise<any[]> {
+  public async getFood(id: string): Promise<FoodEntryCreateOptions> {
     try {
       const food = await Food.findById(id);
       return food;

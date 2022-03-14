@@ -1,3 +1,4 @@
+import { NextFunction, Response } from "express";
 import mongoose from "mongoose";
 
 const FoodSchema = new mongoose.Schema(

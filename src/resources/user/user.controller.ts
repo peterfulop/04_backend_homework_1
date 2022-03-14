@@ -36,14 +36,10 @@ class UserController implements Controller {
         });
       }
       const user = await this.userService.loginUser(username, password);
-      if (!user) {
-        return res.status(401).json({
-          error: "invalid login credential",
-        });
-      }
+      if (!user) throw Error("loginerror");
       createSendToken(user._id, 200, res);
     } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
+      next(new HttpExceptions(500, error.message));
     }
   };
 
@@ -65,13 +61,13 @@ class UserController implements Controller {
         data,
       });
     } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
+      next(new HttpExceptions(500, error.message));
     }
   };
 
   private logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.cookie("jwt", "", {
+      res.cookie("jwt", "loggedOut", {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
       });
@@ -79,7 +75,7 @@ class UserController implements Controller {
         status: "You logged out!",
       });
     } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
+      next(new HttpExceptions(500, error.message));
     }
   };
 
@@ -92,7 +88,7 @@ class UserController implements Controller {
         data,
       });
     } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
+      next(new HttpExceptions(500, error.message));
     }
   };
 
@@ -100,17 +96,13 @@ class UserController implements Controller {
     try {
       const { id } = req.params as { id: string };
       const data = await this.userService.getUser(id);
-      if (!data) {
-        return res.status(404).json({
-          error: "Id not exist!",
-        });
-      }
+      if (!data) throw Error("nodata");
       res.status(200).json({
         status: "success",
         data,
       });
     } catch (error: any) {
-      next(new HttpExceptions(400, error.message));
+      next(new HttpExceptions(500, error.message));
     }
   };
 
@@ -123,11 +115,7 @@ class UserController implements Controller {
         email,
       };
       const data = await this.userService.updateUser(id, updateUser);
-      if (!data) {
-        return res.status(404).json({
-          error: "Id not exist!",
-        });
-      }
+      if (!data) throw Error("nodata");
       res.status(200).json({
         status: "success",
         data,
@@ -144,7 +132,6 @@ class UserController implements Controller {
       res.status(204).json({
         status: "success",
         message: "Document has been deleted",
-        data: null,
       });
     } catch (error: any) {
       next(new HttpExceptions(400, error.message));
