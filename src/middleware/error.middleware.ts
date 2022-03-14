@@ -6,7 +6,7 @@ const setErrorDetails = (error: HttpExceptions): ErrorObject => {
   let errorMessage: string = "Internal server error";
   let statusCode: number = 500;
   if (error.message.includes("11000")) {
-    const value: RegExpMatchArray | null = error.message.match(/(["'])(\\?.)*?\1/);
+    const value = error.message.match(/(["'])(\\?.)*?\1/);
     if (value) errorMessage = `Duplicate field value: ${value[0]}. Please use another value!`;
     statusCode = 400;
   } else if (error.name === "JsonWebTokenError" || error.message === "notoken") {
