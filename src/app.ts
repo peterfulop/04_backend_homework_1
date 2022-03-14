@@ -46,7 +46,6 @@ class App {
     const DB = String(process.env.MONGO_PATH)
       .replace("<USERNAME>", String(process.env.MONGO_USER))
       .replace("<PASSWORD>", String(process.env.MONGO_PASSWORD));
-
     mongoose.connect(DB).then(() => {
       console.log("DB connection successful!");
     });
